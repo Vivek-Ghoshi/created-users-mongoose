@@ -38,15 +38,44 @@ app.get("/users",function(req,res){
    }
 });
 
-// app.get("/delete/:_id",function(req,res){
-//    try{
-//     userModel.findOneAndDelete({_id: req.params._id}).then(function(user){
-//         res.render("users",{user})
-//        })
-//    }
-//    catch(err){
-//     res.send(err)
-//    }
-// });
+app.get("/delete/:_id",async function(req,res){
+ try{
+     await userModel.findOneAndDelete({_id: req.params._id})
+    res.redirect('/users')
+ }
+ catch(err){
+    console.log(err)
+ }
+});
 
+app.get('/edit/:_id', async function(req,res){
+  try{
+    const user =  await userModel.findOneAndUpdate({_id:req.params._id},{
+        name:req.query.name,
+        username:req.query.username,
+        email:req.query.email},
+        {new: true})
+       res.render('edit',{user})
+  }
+  catch(err){
+    res.send(err)
+  }
+
+});
+
+app.post('/edit/:_id', async function(req,res){
+  try{
+    const updatedUser =   await userModel.findOneAndUpdate({_id:req.params._id},{
+        name:req.body.name,
+        username:req.body.username,
+        email:req.body.email},
+        {new: true})
+
+        res.redirect('/users')
+
+  }
+  catch(err){
+   res.send(err)
+  }
+})
 app.listen(3000)
